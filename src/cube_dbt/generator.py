@@ -65,7 +65,7 @@ class CubeGenerator:
         self.schema_path = schema_path
 
     def generate_cubes(self):
-        for model in self.Dbt.models:
+        for model in self.dbt.models:
             cube = CubeYaml(model_name=model.name)
 
             # Instantiate template
