@@ -60,10 +60,11 @@ class CubeYaml:
 
 
 class CubeGenerator:
-    def __init__(self, Dbt: Dbt, path: str):
+    def __init__(self, Dbt: Dbt, schema_path: str):
         self.dbt = Dbt
+        self.schema_path = schema_path
 
-    def generate_cubes(self, schema_path: str):
+    def generate_cubes(self):
         for model in Dbt.models:
             cube = CubeYaml(model_name=model.name)
 
@@ -71,10 +72,10 @@ class CubeGenerator:
             template = cube.generate_template()
 
             # If path does not exist, create it
-            if not os.path.exists(f"{schema_path}/cubes"):
-                os.makedirs(f"{schema_path}/cubes")
+            if not os.path.exists(f"{self.scehma_path}/cubes"):
+                os.makedirs(f"{self.scehma_path}/cubes")
 
-            with open(f"{schema_path}/cubes/{model.name}.yml.jinja", "w") as f:
+            with open(f"{self.scehma_path}/cubes/{model.name}.yml.jinja", "w") as f:
                 f.write(template)
                 f.close()
                 print(f"Generated cube YAML for {model.name}")
