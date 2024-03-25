@@ -72,10 +72,10 @@ class CubeGenerator:
             template = cube.generate_template()
 
             # If path does not exist, create it
-            if not os.path.exists(f"{self.scehma_path}/cubes"):
-                os.makedirs(f"{self.scehma_path}/cubes")
+            if not os.path.exists(f"{self.schema_path}/cubes"):
+                os.makedirs(f"{self.schema_path}/cubes")
 
-            with open(f"{self.scehma_path}/cubes/{model.name}.yml.jinja", "w") as f:
+            with open(f"{self.schema_path}/cubes/{model.name}.yml.jinja", "w") as f:
                 f.write(template)
                 f.close()
                 print(f"Generated cube YAML for {model.name}")
