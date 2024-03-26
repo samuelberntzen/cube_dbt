@@ -1,6 +1,7 @@
 import os
 
 from cube_dbt.dbt import Dbt
+from cube_dbt.model import Model
 
 
 class CubeYaml:
@@ -8,14 +9,14 @@ class CubeYaml:
     Represents a cube YAML Jinja template for a specified DBT model.
     """
 
-    def __init__(self, model_name: str):
+    def __init__(self, model):
         """
         Initializes the CubeYaml class with a model name.
 
         Parameters:
             model_name (str): The name of the DBT model.
         """
-        self.model_name = model_name
+        self.model = model
 
     def _model_template(self) -> str:
         """
@@ -24,7 +25,7 @@ class CubeYaml:
         Returns:
             str: The Jinja template part for setting the model.
         """
-        return f"{{% set model = dbt_model('{self.model_name}') %}}\n"
+        return f"{{% set model = dbt_model('{self.model.name}') %}}\n"
 
     def _cubes_template(self) -> str:
         """
@@ -42,7 +43,11 @@ class CubeYaml:
         Returns:
             str: The Jinja template part for dimensions definition.
         """
-        return "    dimensions:\n      {{ model.as_dimensions() }}\n"
+
+        if len(self.model._as_dimensions()) > 0:
+            return "    dimensions:\n      {{ model.as_dimensions() }}\n"
+
+        return ""
 
     def _joins_template(self) -> str:
         """
@@ -51,7 +56,14 @@ class CubeYaml:
         Returns:
             str: The Jinja template part for joins definition.
         """
-        return "    joins:\n      {{ model.as_joins() }}\n"
+        if len(self.model._as_joins()) > 0:
+            print(self.model._as_joins())
+            return "    joins:\n      {{ model.as_joins() }}\n"
+
+        return ""
+
+    def _measures_template(self) -> str:
+        pass
 
     def generate_template(self) -> str:
         """
@@ -76,7 +88,7 @@ class CubeGenerator:
 
     def generate_cubes(self):
         for model in self.dbt.models:
-            cube = CubeYaml(model_name=model.name)
+            cube = CubeYaml(model=model)
 
             # Instantiate template
             template = cube.generate_template()
