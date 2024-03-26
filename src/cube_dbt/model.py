@@ -106,10 +106,10 @@ class Model:
     def _as_joins(self) -> list:
         return list(test._as_join() for test in self.tests)
 
-    def as_joins(self, skip: list[str] = []) -> str:
+    def as_joins(self) -> str:
         """
         For use in Jinja:
         {{ dbt.model('name').as_joins(skip=['id']) }}
         """
-        joins = self._as_joins(skip)
+        joins = self._as_joins()
         return dump(joins, indent=6) if joins else SafeString("")
