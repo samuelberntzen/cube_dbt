@@ -96,14 +96,25 @@ class Model:
         dimensions = self._as_dimensions(skip)
         return dump(dimensions, indent=6) if dimensions else SafeString("")
 
-    def _as_join(
-        self, test_names: list = ["relationships"], skip: list[str] = []
-    ) -> list:
-        pass
-
     def add_test(self, test) -> None:
         self._tests.append(test)
 
     @property
     def tests(self) -> list:
         return self._tests
+
+    def _as_tests(self, skip: list[str] = []) -> list:
+        return list(test.as_test() for test in self.tests if test.name not in skip)
+
+    def as_tests(self, skip: list[str] = []) -> str:
+        """
+        For use in Jinja:
+        {{ dbt.model('name').as_tests(skip=['id']) }}
+        """
+        dimensions = self._as_tests(skip)
+        return dump(dimensions, indent=6) if dimensions else SafeString("")
+
+    # joins:
+    #   - name: customers
+    #     sql: "{CUBE.customer_id} = {customers.customer_id}"
+    #     relationship: many_to_one

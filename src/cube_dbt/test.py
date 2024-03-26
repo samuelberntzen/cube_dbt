@@ -10,7 +10,7 @@ class Test:
 
     @property
     def name(self) -> str:
-        return self._test_dict["name"]
+        return self._test_dict["refs"][0]["name"]
 
     @property
     def description(self) -> str:
@@ -24,6 +24,10 @@ class Test:
     @property
     def tags(self) -> list:
         return self._test_dict["tags"]
+
+    @property
+    def refs(self) -> list:
+        return self._test_dict["refs"]
 
     @property
     def meta(self) -> dict:
@@ -53,3 +57,38 @@ class Test:
             "kwargs": self.kwargs,
         }
         return dump(data, indent=8)
+
+    def _as_join(self) -> dict:
+        data = self._infer_join_from_test()
+        return data
+
+    def as_join(self) -> str:
+        """
+        For use in Jinja:
+        {{ dbt.model('name').test('name').as_join() }}
+        """
+        return dump(self.as_join(), indent=8)
+
+    def _infer_join_from_test(self):
+        for t in self.tags:
+            if t in [
+                "one_to_many",
+                "many_to_one",
+                "one_to_one",
+                "many_to_many",
+            ]:
+                relationship = t
+                break
+
+        if relationship:
+            join_name = self.name
+            from_column = self.kwargs["from_column"]
+            to_column = self.kwargs["field"]
+
+            sql = "{{CUBE.{}}} = {{{}.{}}}".format(from_column, join_name, to_column)
+
+            join = {"name": join_name, "sql": sql, "relationship": relationship}
+
+            return join
+
+        return {}
