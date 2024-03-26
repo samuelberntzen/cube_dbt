@@ -1,8 +1,9 @@
+from typing import Union
+
 from cube_dbt.column import Column
 from cube_dbt.dump import SafeString, dump
 from cube_dbt.measure import Measure
 from cube_dbt.test import Test
-
 
 
 class Model:
@@ -81,7 +82,7 @@ class Model:
         return self._tests
 
     @property
-    def primary_key(self) -> Column or None:
+    def primary_key(self) -> Union[Column, None]:
         self._init_columns()
         return self._primary_key
 
