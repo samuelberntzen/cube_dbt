@@ -3,6 +3,7 @@ import locale
 from urllib.request import urlopen
 
 from cube_dbt.model import Model
+from cube_dbt.test import Test
 
 
 class Dbt:
@@ -55,9 +56,10 @@ class Dbt:
         return self
 
     def _init_models(self):
-        if self._models == None:
-            self._models = list(
-                Model(node)
+        if self._models is None:
+            # First, initialize all models without tests
+            models_temp = {
+                key: Model(node)
                 for key, node in self.manifest["nodes"].items()
                 if node["resource_type"] == "model"
                 and node["config"]["materialized"] != "ephemeral"
@@ -68,7 +70,21 @@ class Dbt:
                 )
                 and all(tag in node["config"]["tags"] for tag in self.tags)
                 and (node["name"] in self.names if self.names else True)
-            )
+            }
+
+            # Now, iterate over all tests to assign them to their respective models
+            for key, node in self.manifest["nodes"].items():
+                if node["resource_type"] == "test":
+                    test = Test(node)
+                    # Each test lists its dependencies on models
+                    for dependency in node["depends_on"]["nodes"]:
+                        # The dependency is a unique_id that we need to resolve to a model
+                        model_unique_id = dependency
+                        # Check if the model for this test exists in our temporary models map
+                        if model_unique_id in models_temp:
+                            models_temp[model_unique_id].add_test(test)
+
+            self._models = list(models_temp.values())
 
     @property
     def models(self) -> list[Model]:

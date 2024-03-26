@@ -7,6 +7,7 @@ class Model:
         self._model_dict = model_dict
         self._columns = None
         self._primary_key = None
+        self._tests = []
         pass
 
     def __repr__(self) -> str:
@@ -99,3 +100,10 @@ class Model:
         self, test_names: list = ["relationships"], skip: list[str] = []
     ) -> list:
         pass
+
+    def add_test(self, test) -> None:
+        self._tests.append(test)
+
+    @property
+    def tests(self) -> list:
+        return self._tests
