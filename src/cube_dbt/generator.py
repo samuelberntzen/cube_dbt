@@ -8,17 +8,14 @@ from cube_dbt.model import Model
 class CubeYaml:
     """
     Represents a cube YAML Jinja template for a specified DBT model.
-
-    Attributes:
-        model (Model): The DBT model for which the cube YAML template is generated.
     """
 
     def __init__(self, model: Model):
         """
-        Initializes the CubeYaml class with a model.
+        Initializes the CubeYaml class with a model name.
 
         Parameters:
-            model (Model): An instance of a cube_dbt Dbt model
+            model_name (str): The name of the DBT model.
         """
         self.model = model
 
@@ -29,7 +26,7 @@ class CubeYaml:
         Returns:
             str: The Jinja template part for setting the model.
         """
-        return f"{{% set model = dbt_model('{self.model.name}') %}}\\n"
+        return f"{{% set model = dbt_model('{self.model.name}') %}}\n"
 
     def _cubes_template(self) -> str:
         """
@@ -38,18 +35,21 @@ class CubeYaml:
         Returns:
             str: The Jinja template part for cubes definition.
         """
-        return "cubes:\\n  - {{ model.as_cube() }}\\n"
+        return "cubes:\n  - {{ model.as_cube() }}\n"
 
     def _dimensions_template(self, dimension_skips: list[str]) -> str:
-        """
-        Generates the dimensions Jinja template part.
+        """Generates the dimensions Jinja template part.
+
+        Returns:
+            str: The Jinja template part for dimensions definition.
 
         Args:
-            dimension_skips (list): A list of columns or substrings to exclude from dimension definitions.
+            skips (list): A list of columns or substrings to exclude from dimension definitions
 
         Returns:
             str: The Jinja template part for dimensions definition.
         """
+
         # Only generate if dimensions has values, e.g. contains non-empty objects
         non_empty_array = [obj for obj in self.model._as_dimensions() if len(obj) > 0]
 
@@ -57,11 +57,11 @@ class CubeYaml:
         skip_array = []
         for obj in non_empty_array:
             if any(skip_value in obj["name"] for skip_value in dimension_skips):
-                print(f"{obj['name']} should be skipped")
+                # print(f"{obj['name']} should be skipped")
                 skip_array.append(obj["name"])
 
         if len(non_empty_array) > 0:
-            return "    dimensions:\\n      {{{{ model.as_dimensions(skip={}) }}}}\\n".format(
+            return "    dimensions:\n      {{{{ model.as_dimensions(skip={}) }}}}\n".format(
                 skip_array
             )
 
@@ -81,22 +81,16 @@ class CubeYaml:
         non_empty_array = [obj for obj in self.model._as_joins() if len(obj) > 0]
 
         if len(non_empty_array) > 0:
-            return "    joins:\\n      {{ model.as_joins() }}\\n"
+            return "    joins:\n      {{ model.as_joins() }}\n"
 
         return ""
 
     def _measures_template(self) -> str:
-        """
-        Generates the measures Jinja template part.
-
-        Returns:
-            str: The Jinja template part for measures definition.
-        """
         # Only generate if dimensions has values, e.g. contains non-empty objects
         non_empty_array = [obj for obj in self.model._as_measures() if len(obj) > 0]
 
         if len(non_empty_array) > 0:
-            return "    measures:\\n      {{ model.as_measures() }}\\n"
+            return "    measures:\n      {{ model.as_measures() }}\n"
 
         return ""
 
@@ -121,46 +115,11 @@ class CubeYaml:
 
 
 class CubeGenerator:
-    """
-    Generates cube YAML templates for all DBT models.
-
-    example usage:
-
-    ```
-    # globals.py
-
-    from cube_dbt import Dbt
-    from cube_dbt.generator import CubeGenerator
-
-    dbt = Dbt.from_file("manifest.json", encoding="utf-8")
-
-    generator = CubeGenerator(dbt = dbt, "schema")
-    generator.generate_cubes(dimension_skips = ['id', 'primary_key'])
-    ```
-
-    Attributes:
-        dbt (Dbt): The DBT instance.
-        schema_path (str): The path to the schema.
-    """
-
     def __init__(self, Dbt: Dbt, schema_path: str):
-        """
-        Initializes the CubeGenerator class with a DBT instance and a schema path.
-
-        Parameters:
-            Dbt (Dbt): The DBT instance.
-            schema_path (str): The path to which Cube stores the schemas, usually "schema"
-        """
         self.dbt = Dbt
         self.schema_path = schema_path
 
     def generate_cubes(self, dimension_skips: list[str] = []):
-        """
-        Generates cube YAML templates for all DBT models
-
-        Args:
-            dimension_skips (list): A list of columns or substrings to exclude from dimension definitions.
-        """
         for model in self.dbt.models:
             cube = CubeYaml(model=model)
 
