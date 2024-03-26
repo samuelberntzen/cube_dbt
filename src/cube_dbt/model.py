@@ -103,8 +103,8 @@ class Model:
     def tests(self) -> list:
         return self._tests
 
-    def _as_joins(self, skip: list[str] = []) -> list:
-        return list(test._as_join() for test in self.tests if test.name not in skip)
+    def _as_joins(self) -> list:
+        return list(test._as_join() for test in self.tests)
 
     def as_joins(self, skip: list[str] = []) -> str:
         """
