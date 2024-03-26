@@ -4,6 +4,7 @@ from cube_dbt.measure import Measure
 from cube_dbt.test import Test
 
 
+
 class Model:
     def __init__(self, model_dict: dict) -> None:
         self._model_dict = model_dict
@@ -128,6 +129,13 @@ class Model:
         """
         dimensions = self._as_dimensions(skip)
         return dump(dimensions, indent=6) if dimensions else SafeString("")
+
+    def add_test(self, test) -> None:
+        self._tests.append(test)
+
+    @property
+    def tests(self) -> list:
+        return self._tests
 
     def _as_joins(self) -> list:
         return list(test._as_join() for test in self.tests)
