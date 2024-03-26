@@ -33,7 +33,6 @@ class Measure:
         if self.sql:
             data["sql"] = self.sql
         data["type"] = self.type
-        print(data)
         return data
 
     def as_measure(self) -> str:

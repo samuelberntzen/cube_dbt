@@ -82,7 +82,6 @@ class Test:
                 break
 
         if relationship is not None:
-            print(self.kwargs)
             join_name = self.name
             from_column = self.kwargs["column_name"]
             to_column = self.kwargs["field"]
