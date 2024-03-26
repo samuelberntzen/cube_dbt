@@ -104,7 +104,7 @@ class Model:
         return self._tests
 
     def _as_joins(self, skip: list[str] = []) -> list:
-        return list(test.as_join() for test in self.joins if test.name not in skip)
+        return list(test._as_join() for test in self.tests if test.name not in skip)
 
     def as_joins(self, skip: list[str] = []) -> str:
         """
@@ -113,8 +113,3 @@ class Model:
         """
         joins = self._as_joins(skip)
         return dump(joins, indent=6) if joins else SafeString("")
-
-    # joins:
-    #   - name: customers
-    #     sql: "{CUBE.customer_id} = {customers.customer_id}"
-    #     relationship: many_to_one

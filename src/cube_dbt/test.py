@@ -70,6 +70,7 @@ class Test:
         return dump(self.as_join(), indent=8)
 
     def _infer_join_from_test(self):
+        relationship = None
         for t in self.tags:
             if t in [
                 "one_to_many",
@@ -80,9 +81,10 @@ class Test:
                 relationship = t
                 break
 
-        if relationship:
+        if relationship is not None:
+            print(self.kwargs)
             join_name = self.name
-            from_column = self.kwargs["from_column"]
+            from_column = self.kwargs["column_name"]
             to_column = self.kwargs["field"]
 
             sql = "{{CUBE.{}}} = {{{}.{}}}".format(from_column, join_name, to_column)

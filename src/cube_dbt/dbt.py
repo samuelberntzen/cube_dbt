@@ -76,13 +76,13 @@ class Dbt:
             for key, node in self.manifest["nodes"].items():
                 if node["resource_type"] == "test":
                     test = Test(node)
-                    # Each test lists its dependencies on models
-                    for dependency in node["depends_on"]["nodes"]:
-                        # The dependency is a unique_id that we need to resolve to a model
-                        model_unique_id = dependency
-                        # Check if the model for this test exists in our temporary models map
-                        if model_unique_id in models_temp:
-                            models_temp[model_unique_id].add_test(test)
+                    # Each test lists its dependencies on models. Our target is the last dependency, e.g. the model from which the test is being performed
+                    # The dependency is a unique_id that we need to resolve to a model
+                    model_unique_id = node["depends_on"]["nodes"][1]
+
+                    # Check if the model for this test exists in our temporary models map
+                    if model_unique_id in models_temp:
+                        models_temp[model_unique_id].add_test(test)
 
             self._models = list(models_temp.values())
 
