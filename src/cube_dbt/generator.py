@@ -44,6 +44,15 @@ class CubeYaml:
         """
         return "    dimensions:\n      {{ model.as_dimensions() }}\n"
 
+    def _joins_template(self) -> str:
+        """
+        Generates the joins Jinja template part.
+
+        Returns:
+            str: The Jinja template part for joins definition.
+        """
+        return "    joins:\n      {{ model.as_joins() }}\n"
+
     def generate_template(self) -> str:
         """
         Generates the complete cube YAML Jinja template.

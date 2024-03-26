@@ -103,16 +103,16 @@ class Model:
     def tests(self) -> list:
         return self._tests
 
-    def _as_tests(self, skip: list[str] = []) -> list:
-        return list(test.as_test() for test in self.tests if test.name not in skip)
+    def _as_joins(self, skip: list[str] = []) -> list:
+        return list(test.as_join() for test in self.joins if test.name not in skip)
 
-    def as_tests(self, skip: list[str] = []) -> str:
+    def as_joins(self, skip: list[str] = []) -> str:
         """
         For use in Jinja:
-        {{ dbt.model('name').as_tests(skip=['id']) }}
+        {{ dbt.model('name').as_joins(skip=['id']) }}
         """
-        dimensions = self._as_tests(skip)
-        return dump(dimensions, indent=6) if dimensions else SafeString("")
+        joins = self._as_joins(skip)
+        return dump(joins, indent=6) if joins else SafeString("")
 
     # joins:
     #   - name: customers
