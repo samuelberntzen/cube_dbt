@@ -64,6 +64,7 @@ class CubeYaml:
             self._model_template(),
             self._cubes_template(),
             self._dimensions_template(),
+            self._joins_template(),
         ]
         return "".join(template_parts)
 
