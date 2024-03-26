@@ -81,8 +81,3 @@ class Column:
         {{ dbt.model('name').column('name').as_dimension() }}
         """
         return dump(self._as_dimension(), indent=8)
-
-    def _as_relationship(self) -> dict:
-        data = {}
-
-        return data

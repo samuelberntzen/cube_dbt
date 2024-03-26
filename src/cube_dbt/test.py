@@ -10,6 +10,14 @@ class Test:
 
     @property
     def name(self) -> str:
+        return self._test_dict["name"]
+
+    @property
+    def type(self) -> str:
+        return self._test_dict["test_metadata"]["name"]
+
+    @property
+    def target_model_name(self) -> str:
         return self._test_dict["refs"][0]["name"]
 
     @property
@@ -82,7 +90,7 @@ class Test:
                 break
 
         if relationship is not None:
-            join_name = self.name
+            join_name = self.target_model_name
             from_column = self.kwargs["column_name"]
             to_column = self.kwargs["field"]
 

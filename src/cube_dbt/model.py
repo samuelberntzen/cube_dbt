@@ -131,20 +131,13 @@ class Model:
         dimensions = self._as_dimensions(skip)
         return dump(dimensions, indent=6) if dimensions else SafeString("")
 
-    def add_test(self, test) -> None:
-        self._tests.append(test)
-
-    @property
-    def tests(self) -> list:
-        return self._tests
-
-    def _as_joins(self) -> list:
-        return list(test._as_join() for test in self.tests)
+    def _as_joins(self, skip: list[str] = []) -> list:
+        return list(test._as_join() for test in self.tests if test.type not in skip)
 
     def as_joins(self) -> str:
         """
         For use in Jinja:
-        {{ dbt.model('name').as_joins(skip=['id']) }}
+        {{ dbt.model('name').as_joins(skip=[]) }}
         """
         joins = self._as_joins()
         return dump(joins, indent=6) if joins else SafeString("")
@@ -155,7 +148,7 @@ class Model:
     def as_measures(self) -> str:
         """
         For use in Jinja:
-        {{ dbt.model('name').as_measures(skip=['id']) }}
+        {{ dbt.model('name').as_measures() }}
         """
         measures = self._as_measures()
         return dump(measures, indent=6) if measures else SafeString("")
