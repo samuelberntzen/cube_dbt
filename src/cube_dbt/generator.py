@@ -45,9 +45,7 @@ class CubeYaml:
         """
 
         # Only generate if dimensions has values, e.g. contains non-empty objects
-        non_empty_array = [
-            obj for obj in self.model._as_dimensions() if obj is not None
-        ]
+        non_empty_array = [obj for obj in self.model._as_dimensions() if len(obj) > 0]
 
         if len(non_empty_array) > 0:
             return "    dimensions:\n      {{ model.as_dimensions() }}\n"
@@ -62,7 +60,9 @@ class CubeYaml:
             str: The Jinja template part for joins definition.
         """
         # Only generate if dimensions has values, e.g. contains non-empty objects
-        non_empty_array = [obj for obj in self.model._as_joins() if obj is not None]
+        non_empty_array = [obj for obj in self.model._as_joins() if len(obj) > 0]
+
+        print(non_empty_array)
 
         if len(non_empty_array) > 0:
             return "    joins:\n      {{ model.as_joins() }}\n"
