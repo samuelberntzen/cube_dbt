@@ -57,7 +57,6 @@ class CubeYaml:
         skip_array = []
         for obj in non_empty_array:
             if any(skip_value in obj["name"] for skip_value in dimension_skips):
-                # print(f"{obj['name']} should be skipped")
                 skip_array.append(obj["name"])
 
         if len(non_empty_array) > 0:
@@ -120,6 +119,11 @@ class CubeGenerator:
         self.schema_path = schema_path
 
     def generate_cubes(self, dimension_skips: list[str] = []):
+        """Generates cubes from the provided dbt model.
+
+        Args:
+            dimension_skips (list[str], optional): List of column names or keywords which can be present in a column name, which should not be generated as dimensions. Defaults to [].
+        """
         for model in self.dbt.models:
             cube = CubeYaml(model=model)
 
