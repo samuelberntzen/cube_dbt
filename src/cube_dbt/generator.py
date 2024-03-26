@@ -70,7 +70,15 @@ class CubeYaml:
         return ""
 
     def _measures_template(self) -> str:
-        pass
+        # Only generate if dimensions has values, e.g. contains non-empty objects
+        non_empty_array = [obj for obj in self.model._as_measures() if len(obj) > 0]
+
+        print(non_empty_array)
+
+        if len(non_empty_array) > 0:
+            return "    measures:\n      {{ model.as_measures() }}\n"
+
+        return ""
 
     def generate_template(self) -> str:
         """
@@ -84,6 +92,7 @@ class CubeYaml:
             self._cubes_template(),
             self._dimensions_template(),
             self._joins_template(),
+            self._measures_template(),
         ]
         return "".join(template_parts)
 
